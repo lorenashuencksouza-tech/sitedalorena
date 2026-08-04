@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Diário de Leitura</title>
+    <title>Biblioteca Shuenck</title>
 
     <style>
         /* Reset Básico e Cores Base */
@@ -22,7 +22,7 @@
 
         header {
             text-align: center;
-            padding: 30px 20px 10px;
+            padding: 30px 20px 15px;
             background-color: #ffffff;
             border-bottom: 1px solid #e8e3d9;
         }
@@ -36,10 +36,38 @@
             color: #7f8c8d;
         }
 
+        /* --- Menu de Navegação (Abas) --- */
+        nav.tab-menu {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            background-color: #ffffff;
+            padding: 15px;
+            border-bottom: 2px solid #e8e3d9;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: 2px solid #e67e22;
+            color: #e67e22;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background-color: #e67e22;
+            color: white;
+        }
+
         /* --- Form Container --- */
         .form-container {
             max-width: 500px;
-            margin: 30px auto;
+            margin: 0 auto 30px;
             background: #ffffff;
             padding: 25px;
             border-radius: 12px;
@@ -99,7 +127,15 @@
             background-color: #d35400;
         }
 
-        /* --- Galeria de Cards --- */
+        /* --- Estrutura das Seções --- */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         .gallery-container {
             display: flex;
             flex-wrap: wrap;
@@ -110,7 +146,6 @@
             margin: 0 auto;
         }
 
-        /* Mensagem de Estante Vazia */
         .empty-message {
             text-align: center;
             color: #7f8c8d;
@@ -154,14 +189,29 @@
             font-size: 13px;
             color: #e67e22;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
+        }
+
+        .genre-tag {
+            display: inline-block;
+            background-color: #eae6df;
+            color: #555;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            width: fit-content;
         }
 
         .card-content .initial-comment {
             font-size: 14px;
             color: #666;
             margin-bottom: 15px;
-            font-style: italic;
+            background: #faf8f5;
+            padding: 8px 12px;
+            border-left: 3px solid #e67e22;
+            border-radius: 4px;
         }
 
         /* Status do Livro */
@@ -171,7 +221,7 @@
             border-radius: 12px;
             font-size: 12px;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             width: fit-content;
         }
 
@@ -223,7 +273,7 @@
             margin-bottom: 5px;
         }
 
-        /* --- Seção de Comentários Extras --- */
+        /* --- Seção de Comentários Das Pessoas --- */
         .comments-section {
             margin-top: 15px;
             border-top: 1px dashed #ddd;
@@ -293,66 +343,205 @@
 <body>
 
     <header>
-        <h1>📖 Meu Diário de Leitura</h1>
-        <p>Cadastre seus livros, acompanhe suas impressões e adicione novos comentários!</p>
+        <h1>📚 Biblioteca Shuenck</h1>
+        <p>Cadastre seus livros, acompanhe suas leituras e veja os comentários da comunidade!</p>
     </header>
 
-    <section class="form-container">
-        <h2>➕ Adicionar Livro à Estante</h2>
-        <form id="book-form">
-            <div class="form-group">
-                <label for="title">Título do Livro</label>
-                <input type="text" id="title" placeholder="Ex: O Alquimista" required>
-            </div>
+    <nav class="tab-menu">
+        <button class="tab-btn active" onclick="switchTab('my-shelf', this)">📚 Minha Estante</button>
+        <button class="tab-btn" onclick="switchTab('my-readings', this)">📖 Minhas Leituras</button>
+        <button class="tab-btn" onclick="switchTab('community', this)">🌐 Feed da Comunidade</button>
+    </nav>
+
+    <div id="my-shelf" class="tab-content active">
+        <section class="form-container">
+            <h2>➕ Adicionar Livro à Biblioteca Shuenck</h2>
+            <form id="book-form">
+                <div class="form-group">
+                    <label for="title">Título do Livro</label>
+                    <input type="text" id="title" placeholder="Ex: O Alquimista" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="author">Autor(a)</label>
+                    <input type="text" id="author" placeholder="Ex: Paulo Coelho" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="genre">Gênero Literário</label>
+                    <select id="genre" required>
+                        <option value="Fantasia">Fantasia</option>
+                        <option value="Ficção Científica">Ficção Científica</option>
+                        <option value="Romance">Romance</option>
+                        <option value="Suspense / Policial">Suspense / Policial</option>
+                        <option value="Clássicos">Clássicos</option>
+                        <option value="Não-Ficção / Desenvolvimento">Não-Ficção / Desenvolvimento</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="initial-comment">Seu Comentário / Impressões Iniciais</label>
+                    <textarea id="initial-comment" rows="2" placeholder="O que você está achando desse livro?" required></textarea>
+                </div>
+
+                <button type="submit" class="btn-add">Adicionar à Estante</button>
+            </form>
+        </section>
+
+        <main class="gallery-container" id="my-gallery">
+            <p class="empty-message" id="empty-shelf-msg">Nenhum livro adicionado ainda. Preencha o formulário acima para cadastrar um livro!</p>
+        </main>
+    </div>
+
+    <div id="my-readings" class="tab-content">
+        <main class="gallery-container" id="readings-gallery">
+            <p class="empty-message" id="empty-readings-msg">Nenhum livro adicionado em "Minhas Leituras" ainda. Cadastre um livro na aba "Minha Estante"!</p>
+        </main>
+    </div>
+
+    <div id="community" class="tab-content">
+        <main class="gallery-container" id="community-gallery">
             
-            <div class="form-group">
-                <label for="author">Autor(a)</label>
-                <input type="text" id="author" placeholder="Ex: Paulo Coelho" required>
+            <div class="card">
+                <img src="https://picsum.photos/id/1050/300/200" alt="Capa O Nome do Vento">
+                <div class="card-content">
+                    <h3>O Nome do Vento</h3>
+                    <span class="author">Patrick Rothfuss</span>
+                    <span class="genre-tag">🧙 Fantasia</span>
+                    <span class="status-badge status-finished">⭐ 4.9/5 da Comunidade</span>
+                    <p class="initial-comment"><strong>Comentário inicial:</strong> "A trajetória mágica e fascinante do lendário Kvothe."</p>
+
+                    <div class="comments-section">
+                        <button class="btn-toggle-comments" onclick="toggleComments(this)">💬 Ver comentários de leitores (2)</button>
+                        <div class="comments-list">
+                            <div class="comment-item">
+                                <span class="user-name">Felipe R.</span>
+                                Um dos melhores sistemas de magia que já li!
+                            </div>
+                            <div class="comment-item">
+                                <span class="user-name">Beatriz M.</span>
+                                A escrita é poética e envolvente do começo ao fim.
+                            </div>
+                            <div class="add-comment-box">
+                                <input type="text" placeholder="Deixe um comentário público...">
+                                <button onclick="addExtraComment(this)">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="initial-comment">Impressões Iniciais / Expectativa</label>
-                <textarea id="initial-comment" rows="2" placeholder="O que você está achando do começo?" required></textarea>
+            <div class="card">
+                <img src="https://picsum.photos/id/1067/300/200" alt="Capa Duna">
+                <div class="card-content">
+                    <h3>Duna</h3>
+                    <span class="author">Frank Herbert</span>
+                    <span class="genre-tag">🚀 Ficção Científica</span>
+                    <span class="status-badge status-finished">⭐ 4.8/5 da Comunidade</span>
+                    <p class="initial-comment"><strong>Comentário inicial:</strong> "Uma disputa política e ecológica no planeta desértico Arrakis."</p>
+
+                    <div class="comments-section">
+                        <button class="btn-toggle-comments" onclick="toggleComments(this)">💬 Ver comentários de leitores (1)</button>
+                        <div class="comments-list">
+                            <div class="comment-item">
+                                <span class="user-name">Lucas A.</span>
+                                Atemporal! A construção do universo é incrível.
+                            </div>
+                            <div class="add-comment-box">
+                                <input type="text" placeholder="Deixe um comentário público...">
+                                <button onclick="addExtraComment(this)">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <button type="submit" class="btn-add">Adicionar à Minha Estante</button>
-        </form>
-    </section>
+            <div class="card">
+                <img src="https://picsum.photos/id/1062/300/200" alt="Capa Orgulho e Preconceito">
+                <div class="card-content">
+                    <h3>Orgulho e Preconceito</h3>
+                    <span class="author">Jane Austen</span>
+                    <span class="genre-tag">💖 Romance</span>
+                    <span class="status-badge status-finished">⭐ 4.9/5 da Comunidade</span>
+                    <p class="initial-comment"><strong>Comentário inicial:</strong> "A dinâmica inesquecível entre Elizabeth Bennet e Mr. Darcy."</p>
 
-    <main class="gallery-container" id="my-gallery">
-        <p class="empty-message" id="empty-msg">Nenhum livro cadastrado ainda. Preencha o formulário acima para começar sua estante!</p>
-    </main>
+                    <div class="comments-section">
+                        <button class="btn-toggle-comments" onclick="toggleComments(this)">💬 Ver comentários de leitores (1)</button>
+                        <div class="comments-list">
+                            <div class="comment-item">
+                                <span class="user-name">Camila T.</span>
+                                A ironia e o humor da Jane Austen são perfeitos!
+                            </div>
+                            <div class="add-comment-box">
+                                <input type="text" placeholder="Deixe um comentário público...">
+                                <button onclick="addExtraComment(this)">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
 
     <script>
         const bookForm = document.getElementById('book-form');
         const myGallery = document.getElementById('my-gallery');
-        const emptyMsg = document.getElementById('empty-msg');
+        const readingsGallery = document.getElementById('readings-gallery');
+        const emptyShelfMsg = document.getElementById('empty-shelf-msg');
+        const emptyReadingsMsg = document.getElementById('empty-readings-msg');
 
-        // Adicionar Livro do próprio leitor
+        // Alternar entre as 3 Abas
+        function switchTab(tabId, button) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            button.classList.add('active');
+        }
+
+        // Adicionar Livro no Formulário
         bookForm.addEventListener('submit', function(event) {
             event.preventDefault();
 
-            // Esconde a mensagem de estante vazia
-            if (emptyMsg) {
-                emptyMsg.style.display = 'none';
-            }
+            if (emptyShelfMsg) emptyShelfMsg.style.display = 'none';
+            if (emptyReadingsMsg) emptyReadingsMsg.style.display = 'none';
 
             const title = document.getElementById('title').value;
             const author = document.getElementById('author').value;
+            const genre = document.getElementById('genre').value;
             const initialComment = document.getElementById('initial-comment').value;
 
             const randomImgId = Math.floor(Math.random() * 50) + 10;
             const imgUrl = `https://picsum.photos/id/${randomImgId}/300/200`;
 
-            const newCard = document.createElement('div');
-            newCard.classList.add('card');
-            newCard.innerHTML = `
+            // Card Simples para a "Minha Estante"
+            const shelfCard = document.createElement('div');
+            shelfCard.classList.add('card');
+            shelfCard.innerHTML = `
                 <img src="${imgUrl}" alt="Capa do livro">
                 <div class="card-content">
                     <h3>${title}</h3>
                     <span class="author">${author}</span>
+                    <span class="genre-tag">🔖 ${genre}</span>
+                    <span class="status-badge status-reading">📖 Cadastrado na Estante</span>
+                    <p class="initial-comment"><strong>Seu Comentário:</strong> "${initialComment}"</p>
+                </div>
+            `;
+            myGallery.prepend(shelfCard);
+
+            // Card Completo para "Minhas Leituras" (Com área de comentários e resenha)
+            const readingCard = document.createElement('div');
+            readingCard.classList.add('card');
+            readingCard.innerHTML = `
+                <img src="${imgUrl}" alt="Capa do livro">
+                <div class="card-content">
+                    <h3>${title}</h3>
+                    <span class="author">${author}</span>
+                    <span class="genre-tag">🔖 ${genre}</span>
                     <span class="status-badge status-reading">📖 Lendo atualmente</span>
-                    <p class="initial-comment">"${initialComment}"</p>
+                    <p class="initial-comment"><strong>Seu Comentário Inicial:</strong> "${initialComment}"</p>
 
                     <div class="review-section">
                         <button class="btn-finish" onclick="showReviewForm(this)">Concluir Leitura</button>
@@ -373,22 +562,30 @@
                     </div>
 
                     <div class="comments-section">
-                        <button class="btn-toggle-comments" onclick="toggleComments(this)">💬 Ver outros comentários / anotações (0)</button>
+                        <button class="btn-toggle-comments" onclick="toggleComments(this)">💬 Ver comentários das pessoas (2)</button>
                         <div class="comments-list">
+                            <div class="comment-item">
+                                <span class="user-name">Ana Clara ⭐⭐⭐⭐⭐</span>
+                                Também li esse livro e achei a história incrível!
+                            </div>
+                            <div class="comment-item">
+                                <span class="user-name">João Pedro ⭐⭐⭐⭐</span>
+                                Muito boa escolha! O ritmo do autor é sensacional.
+                            </div>
                             <div class="add-comment-box">
-                                <input type="text" placeholder="Adicionar um novo comentário...">
+                                <input type="text" placeholder="Deixe outro comentário...">
                                 <button onclick="addExtraComment(this)">Enviar</button>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
+            readingsGallery.prepend(readingCard);
 
-            myGallery.prepend(newCard);
             bookForm.reset();
         });
 
-        // Revela o formulário de avaliação final
+        // Revelar formulário de resenha
         function showReviewForm(button) {
             const reviewSection = button.parentElement;
             const reviewForm = reviewSection.querySelector('.review-form');
@@ -396,7 +593,7 @@
             reviewForm.style.display = 'flex';
         }
 
-        // Salva a avaliação/resenha final
+        // Salvar avaliação final
         function saveReview(button) {
             const reviewSection = button.parentElement.parentElement;
             const cardContent = reviewSection.parentElement;
@@ -416,12 +613,12 @@
             const reviewDisplay = reviewSection.querySelector('.review-display');
             reviewDisplay.innerHTML = `
                 <div class="stars-display">${starsText}</div>
-                <p style="font-size: 13px; color: #444;"><strong>Resenha Final:</strong> ${finalComment ? finalComment : 'Sem resenha cadastrada.'}</p>
+                <p style="font-size: 13px; color: #444;"><strong>Sua Resenha Final:</strong> ${finalComment ? finalComment : 'Sem resenha cadastrada.'}</p>
             `;
             reviewDisplay.style.display = 'block';
         }
 
-        // Abrir/Fechar a lista de comentários
+        // Abrir/Fechar comentários das pessoas
         function toggleComments(button) {
             const commentsList = button.nextElementSibling;
             if (commentsList.style.display === 'flex') {
@@ -431,7 +628,7 @@
             }
         }
 
-        // Adicionar um novo comentário/anotação no livro cadastrado
+        // Adicionar novo comentário
         function addExtraComment(button) {
             const input = button.previousElementSibling;
             const commentText = input.value.trim();
@@ -441,17 +638,15 @@
                 
                 const newComment = document.createElement('div');
                 newComment.classList.add('comment-item');
-                newComment.innerHTML = `<span class="user-name">Comentário Adicional:</span> ${commentText}`;
+                newComment.innerHTML = `<span class="user-name">Outro Leitor:</span> ${commentText}`;
 
-                // Insere antes da caixa de texto
                 commentsList.insertBefore(newComment, button.parentElement);
 
                 input.value = '';
 
-                // Atualiza a contagem no botão
                 const toggleBtn = commentsList.previousElementSibling;
                 const totalComments = commentsList.querySelectorAll('.comment-item').length;
-                toggleBtn.textContent = `💬 Ver outros comentários / anotações (${totalComments})`;
+                toggleBtn.textContent = `💬 Ver comentários das pessoas (${totalComments})`;
             }
         }
     </script>
