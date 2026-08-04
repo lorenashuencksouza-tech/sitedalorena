@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Diário de Leitura</title>
+    <title>Meu Diário & Comunidade de Leitura</title>
 
     <style>
         /* Reset Básico e Cores Base */
@@ -22,9 +22,9 @@
 
         header {
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 20px 10px;
             background-color: #ffffff;
-            border-bottom: 2px solid #e8e3d9;
+            border-bottom: 1px solid #e8e3d9;
         }
 
         header h1 {
@@ -36,10 +36,37 @@
             color: #7f8c8d;
         }
 
+        /* --- Menu de Navegação (Abas) --- */
+        nav.tab-menu {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            background-color: #ffffff;
+            padding: 15px;
+            border-bottom: 2px solid #e8e3d9;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: 2px solid #e67e22;
+            color: #e67e22;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background-color: #e67e22;
+            color: white;
+        }
+
         /* --- Formulário de Cadastro de Livro --- */
         .form-container {
             max-width: 500px;
-            margin: 30px auto;
+            margin: 0 auto 30px;
             background: #ffffff;
             padding: 25px;
             border-radius: 12px;
@@ -66,8 +93,8 @@
             color: #555;
         }
 
-        .form-group input, 
-        .form-group textarea, 
+        .form-group input,
+        .form-group textarea,
         .form-group select {
             width: 100%;
             padding: 10px;
@@ -77,7 +104,7 @@
             outline: none;
         }
 
-        .form-group input:focus, 
+        .form-group input:focus,
         .form-group textarea:focus {
             border-color: #e67e22;
         }
@@ -99,23 +126,32 @@
             background-color: #d35400;
         }
 
-        /* --- Galeria de Cards --- */
+        /* --- Estrutura das Seções --- */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         .gallery-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 30px;
-            padding: 20px;
+            padding: 10px 20px;
             max-width: 1200px;
             margin: 0 auto;
         }
 
+        /* --- Cards de Livros --- */
         .card {
             background-color: #ffffff;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             overflow: hidden;
-            width: 320px;
+            width: 340px;
             border: 1px solid #efebe4;
             display: flex;
             flex-direction: column;
@@ -195,7 +231,7 @@
         }
 
         .review-form {
-            display: none; /* Escondido até o usuário clicar em Concluir */
+            display: none;
             flex-direction: column;
             gap: 10px;
         }
@@ -212,87 +248,197 @@
             font-size: 16px;
             margin-bottom: 5px;
         }
+
+        /* --- Seção de Comentários da Comunidade --- */
+        .community-comments-section {
+            margin-top: 15px;
+            border-top: 1px dashed #ddd;
+            padding-top: 10px;
+        }
+
+        .btn-toggle-comments {
+            background: none;
+            border: none;
+            color: #2980b9;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px 0;
+            width: 100%;
+            text-align: left;
+        }
+
+        .comments-list {
+            display: none;
+            margin-top: 10px;
+            max-height: 180px;
+            overflow-y: auto;
+            gap: 8px;
+            flex-direction: column;
+        }
+
+        .comment-item {
+            background-color: #f2efe9;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .comment-item .user-name {
+            font-weight: bold;
+            color: #4a3b32;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .add-community-comment {
+            display: flex;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .add-community-comment input {
+            flex: 1;
+            padding: 6px;
+            font-size: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .add-community-comment button {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>📖 Meu Diário de Leitura</h1>
-        <p>Cadastre os livros que você está lendo e registre suas impressões!</p>
+        <h1>📖 Meu Diário & Comunidade de Leitura</h1>
+        <p>Acompanhe suas leituras e veja o que outros leitores estão achando!</p>
     </header>
 
-    <section class="form-container">
-        <h2>➕ Adicionar Novo Livro</h2>
-        <form id="book-form">
-            <div class="form-group">
-                <label for="title">Título do Livro</label>
-                <input type="text" id="title" placeholder="Ex: O Alquimista" required>
-            </div>
+    <nav class="tab-menu">
+        <button class="tab-btn active" onclick="switchTab('my-shelf')">📚 Minha Estante</button>
+        <button class="tab-btn" onclick="switchTab('community')">🌐 Feed da Comunidade</button>
+    </nav>
+
+    <div id="my-shelf" class="tab-content active">
+        <section class="form-container">
+            <h2>➕ Adicionar Livro à Minha Estante</h2>
+            <form id="book-form">
+                <div class="form-group">
+                    <label for="title">Título do Livro</label>
+                    <input type="text" id="title" placeholder="Ex: O Alquimista" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="author">Autor(a)</label>
+                    <input type="text" id="author" placeholder="Ex: Paulo Coelho" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="initial-comment">Minhas Impressões Iniciais</label>
+                    <textarea id="initial-comment" rows="2" placeholder="O que você está achando do começo?" required></textarea>
+                </div>
+
+                <button type="submit" class="btn-add">Adicionar à Minha Estante</button>
+            </form>
+        </section>
+
+        <main class="gallery-container" id="my-gallery">
+            </main>
+    </div>
+
+    <div id="community" class="tab-content">
+        <main class="gallery-container" id="community-gallery">
             
-            <div class="form-group">
-                <label for="author">Autor(a)</label>
-                <input type="text" id="author" placeholder="Ex: Paulo Coelho" required>
-            </div>
+            <div class="card">
+                <img src="https://picsum.photos/id/24/300/200" alt="Capa de Dom Casmurro">
+                <div class="card-content">
+                    <h3>Dom Casmurro</h3>
+                    <span class="author">Machado de Assis</span>
+                    <span class="status-badge status-finished">✅ Recomendado pela Comunidade</span>
+                    <p class="initial-comment">"Um dos maiores clássicos da literatura brasileira."</p>
 
-            <div class="form-group">
-                <label for="initial-comment">Comentário Inicial / Expectativa</label>
-                <textarea id="initial-comment" rows="2" placeholder="O que você está achando do começo?" required></textarea>
-            </div>
-
-            <button type="submit" class="btn-add">Adicionar à Minha Estante</button>
-        </form>
-    </section>
-
-    <main class="gallery-container" id="gallery">
-        
-        <div class="card">
-            <img src="https://picsum.photos/id/24/300/200" alt="Capa do Livro">
-            <div class="card-content">
-                <h3>Dom Casmurro</h3>
-                <span class="author">Machado de Assis</span>
-                <span class="status-badge status-reading">📖 Lendo atualmente</span>
-                <p class="initial-comment">"Comecei hoje! Ansioso para ver toda a discussão sobre Capitu e Bentinho."</p>
-
-                <div class="review-section">
-                    <button class="btn-finish" onclick="showReviewForm(this)">Concluir Leitura</button>
-                    
-                    <div class="review-form">
-                        <select class="star-rating">
-                            <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
-                            <option value="4">⭐⭐⭐⭐ (4/5)</option>
-                            <option value="3">⭐⭐⭐ (3/5)</option>
-                            <option value="2">⭐⭐ (2/5)</option>
-                            <option value="1">⭐ (1/5)</option>
-                        </select>
-                        <textarea class="final-comment" rows="2" placeholder="Escreva sua resenha final..."></textarea>
-                        <button class="btn-add" onclick="saveReview(this)">Salvar Avaliação</button>
+                    <div class="community-comments-section">
+                        <button class="btn-toggle-comments" onclick="toggleComments(this)">💬 Ver comentários da comunidade (2)</button>
+                        <div class="comments-list">
+                            <div class="comment-item">
+                                <span class="user-name">Mariana S. ⭐⭐⭐⭐⭐</span>
+                                Capitu traiu ou não traiu? Essa dúvida faz o livro ser perfeito!
+                            </div>
+                            <div class="comment-item">
+                                <span class="user-name">Carlos Eduardo ⭐⭐⭐⭐</span>
+                                A escrita de Machado de Assis é genial e cheia de ironias.
+                            </div>
+                            
+                            <div class="add-community-comment">
+                                <input type="text" placeholder="Deixe seu comentário...">
+                                <button onclick="addCommunityComment(this)">Enviar</button>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="review-display" style="display: none;"></div>
                 </div>
             </div>
-        </div>
 
-    </main>
+            <div class="card">
+                <img src="https://picsum.photos/id/36/300/200" alt="Capa de O Hobbit">
+                <div class="card-content">
+                    <h3>O Hobbit</h3>
+                    <span class="author">J.R.R. Tolkien</span>
+                    <span class="status-badge status-finished">✅ Recomendado pela Comunidade</span>
+                    <p class="initial-comment">"Uma aventura leve e fantástica para todas as idades."</p>
+
+                    <div class="community-comments-section">
+                        <button class="btn-toggle-comments" onclick="toggleComments(this)">💬 Ver comentários da comunidade (1)</button>
+                        <div class="comments-list">
+                            <div class="comment-item">
+                                <span class="user-name">Lucas Lima ⭐⭐⭐⭐⭐</span>
+                                Bilbo Bolseiro é inesquecível! A jornada é muito divertida.
+                            </div>
+
+                            <div class="add-community-comment">
+                                <input type="text" placeholder="Deixe seu comentário...">
+                                <button onclick="addCommunityComment(this)">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
 
     <script>
         const bookForm = document.getElementById('book-form');
-        const gallery = document.getElementById('gallery');
+        const myGallery = document.getElementById('my-gallery');
 
-        // Função para cadastrar um novo livro na estante
+        // Alternar entre Abas
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Adicionar Livro à Minha Estante
         bookForm.addEventListener('submit', function(event) {
             event.preventDefault();
 
-            // Pega os valores dos inputs
             const title = document.getElementById('title').value;
             const author = document.getElementById('author').value;
             const initialComment = document.getElementById('initial-comment').value;
 
-            // Gera uma imagem aleatória de livro usando um ID randômico do Picsum
             const randomImgId = Math.floor(Math.random() * 50) + 10;
             const imgUrl = `https://picsum.photos/id/${randomImgId}/300/200`;
 
-            // Cria o HTML do novo card
             const newCard = document.createElement('div');
             newCard.classList.add('card');
             newCard.innerHTML = `
@@ -301,7 +447,7 @@
                     <h3>${title}</h3>
                     <span class="author">${author}</span>
                     <span class="status-badge status-reading">📖 Lendo atualmente</span>
-                    <p class="initial-comment">"${initialComment}"</p>
+                    <p class="initial-comment">"Meu comentário: ${initialComment}"</p>
 
                     <div class="review-section">
                         <button class="btn-finish" onclick="showReviewForm(this)">Concluir Leitura</button>
@@ -320,40 +466,89 @@
 
                         <div class="review-display" style="display: none;"></div>
                     </div>
+
+                    <div class="community-comments-section">
+                        <button class="btn-toggle-comments" onclick="toggleComments(this)">💬 Ver comentários da comunidade (0)</button>
+                        <div class="comments-list">
+                            <div class="add-community-comment">
+                                <input type="text" placeholder="Deixe um comentário público...">
+                                <button onclick="addCommunityComment(this)">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
 
-            // Adiciona o novo card na galeria
-            gallery.prepend(newCard);
-
-            // Limpa o formulário
+            myGallery.prepend(newCard);
             bookForm.reset();
         });
 
-        // Revela o formulário de avaliação ao clicar em "Concluir Leitura"
+        // Revelar formulário de resenha
         function showReviewForm(button) {
             const reviewSection = button.parentElement;
             const reviewForm = reviewSection.querySelector('.review-form');
-            button.style.display = 'none'; // Esconde o botão de concluir
-            reviewForm.style.display = 'flex'; // Exibe o formulário de resenha
+            button.style.display = 'none';
+            reviewForm.style.display = 'flex';
         }
 
-        // Salva a avaliação final do leitor
+        // Salvar avaliação final
         function saveReview(button) {
             const reviewSection = button.parentElement.parentElement;
             const cardContent = reviewSection.parentElement;
             
             const starSelect = reviewSection.querySelector('.star-rating');
-            const starsCount = starSelect.value;
+            const starsCount = parseInt(starSelect.value, 10);
             const finalComment = reviewSection.querySelector('.final-comment').value;
 
-            // Cria as estrelas visuais
             const starsText = '⭐'.repeat(starsCount);
 
-            // Atualiza a badge de status
             const statusBadge = cardContent.querySelector('.status-badge');
             statusBadge.className = 'status-badge status-finished';
             statusBadge.textContent = '✅ Leitura Concluída';
 
-            // Esconde o formulário de avaliação
-            reviewSection.querySelector('.review-form').style.display =
+            reviewSection.querySelector('.review-form').style.display = 'none';
+
+            const reviewDisplay = reviewSection.querySelector('.review-display');
+            reviewDisplay.innerHTML = `
+                <div class="stars-display">${starsText}</div>
+                <p style="font-size: 13px; color: #444;"><strong>Minha Resenha:</strong> ${finalComment ? finalComment : 'Sem resenha cadastrada.'}</p>
+            `;
+            reviewDisplay.style.display = 'block';
+        }
+
+        // Abrir/Fechar comentários da comunidade
+        function toggleComments(button) {
+            const commentsList = button.nextElementSibling;
+            if (commentsList.style.display === 'flex') {
+                commentsList.style.display = 'none';
+            } else {
+                commentsList.style.display = 'flex';
+            }
+        }
+
+        // Adicionar novo comentário da comunidade
+        function addCommunityComment(button) {
+            const input = button.previousElementSibling;
+            const commentText = input.value.trim();
+
+            if (commentText !== '') {
+                const commentsList = button.parentElement.parentElement;
+                
+                const newComment = document.createElement('div');
+                newComment.classList.add('comment-item');
+                newComment.innerHTML = `<span class="user-name">Você (Leitor)</span> ${commentText}`;
+
+                // Insere antes da caixa de input
+                commentsList.insertBefore(newComment, button.parentElement);
+
+                input.value = '';
+
+                // Atualiza o contador de comentários no botão
+                const toggleBtn = commentsList.previousElementSibling;
+                const totalComments = commentsList.querySelectorAll('.comment-item').length;
+                toggleBtn.textContent = `💬 Ver comentários da comunidade (${totalComments})`;
+            }
+        }
+    </script>
+</body>
+</html>
