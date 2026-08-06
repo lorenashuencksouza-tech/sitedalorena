@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -25,6 +25,7 @@
             padding: 30px 20px 15px;
             background-color: #ffffff;
             border-bottom: 1px solid #e8e3d9;
+            position: relative;
         }
 
         header h1 {
@@ -34,6 +35,63 @@
 
         header p {
             color: #7f8c8d;
+        }
+
+        /* --- Barra do Usuário Logado --- */
+        .user-bar {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #4a3b32;
+        }
+
+        .btn-logout {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-logout:hover {
+            background-color: #c0392b;
+        }
+
+        /* --- Tela de Login / Cadastro --- */
+        #auth-container {
+            max-width: 400px;
+            margin: 60px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #efebe4;
+            text-align: center;
+        }
+
+        #auth-container h2 {
+            color: #4a3b32;
+            margin-bottom: 20px;
+        }
+
+        .auth-toggle {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        .auth-toggle span {
+            color: #e67e22;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: underline;
         }
 
         /* --- Menu de Navegação (Abas) --- */
@@ -278,7 +336,7 @@
             margin-bottom: 5px;
         }
 
-        /* --- Seção de Comentários Das Pessoas --- */
+        /* --- Seção de Comentários --- */
         .comments-section {
             margin-top: 15px;
             border-top: 1px dashed #ddd;
@@ -354,168 +412,211 @@
     <header>
         <h1>📚 Biblioteca Shuenck</h1>
         <p>Cadastre seus livros, acompanhe suas leituras e veja os comentários da comunidade!</p>
+        <div id="user-bar" class="user-bar" style="display: none;">
+            <span id="user-greeting"></span>
+            <button class="btn-logout" onclick="logout()">Sair</button>
+        </div>
     </header>
 
-    <nav class="tab-menu">
-        <button class="tab-btn active" onclick="switchTab('my-shelf', this)">📚 Minha Estante</button>
-        <button class="tab-btn" onclick="switchTab('my-readings', this)">📖 Minhas Leituras</button>
-        <button class="tab-btn" onclick="switchTab('community', this)">🌐 Feed da Comunidade</button>
-    </nav>
-
-    <div id="my-shelf" class="tab-content active">
-        <section class="form-container">
-            <h2>➕ Adicionar Livro à Biblioteca Shuenck</h2>
-            <form id="book-form">
-                <div class="form-group">
-                    <label for="title">Título do Livro</label>
-                    <input type="text" id="title" placeholder="Ex: O Alquimista" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="author">Autor(a)</label>
-                    <input type="text" id="author" placeholder="Ex: Paulo Coelho" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="genre">Gênero Literário</label>
-                    <select id="genre" required>
-                        <option value="Fantasia">Fantasia</option>
-                        <option value="Ficção Científica">Ficção Científica</option>
-                        <option value="Romance">Romance</option>
-                        <option value="Suspense / Policial">Suspense / Policial</option>
-                        <option value="Clássicos">Clássicos</option>
-                        <option value="Não-Ficção / Desenvolvimento">Não-Ficção / Desenvolvimento</option>
-                        <option value="Outro">Outro</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="initial-comment">Seu Comentário / Impressões Iniciais</label>
-                    <textarea id="initial-comment" rows="2" placeholder="O que você está achando desse livro?" required></textarea>
-                </div>
-
-                <button type="submit" class="btn-add">Adicionar à Estante</button>
-            </form>
-        </section>
-
-        <main class="gallery-container" id="my-gallery">
-            <p class="empty-message" id="empty-shelf-msg">Nenhum livro adicionado ainda. Preencha o formulário acima para cadastrar um livro!</p>
-        </main>
+    <div id="auth-container">
+        <h2 id="auth-title">🔑 Entrar na Minha Conta</h2>
+        <form id="auth-form">
+            <div class="form-group">
+                <label for="username">Nome de Usuário</label>
+                <input type="text" id="username" placeholder="Digite seu nome" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" placeholder="Digite sua senha" required>
+            </div>
+            <button type="submit" class="btn-add" id="auth-submit-btn">Entrar</button>
+        </form>
+        <div class="auth-toggle">
+            <span id="auth-toggle-text">Não tem uma conta? Cadastre-se</span>
+        </div>
     </div>
 
-    <div id="my-readings" class="tab-content">
-        <main class="gallery-container" id="readings-gallery">
-            <p class="empty-message" id="empty-readings-msg">Nenhum livro adicionado em "Minhas Leituras" ainda. Cadastre um livro na aba "Minha Estante"!</p>
-        </main>
-    </div>
+    <div id="app-content" style="display: none;">
+        <nav class="tab-menu">
+            <button class="tab-btn active" onclick="switchTab('my-shelf', this)">📚 Minha Estante</button>
+            <button class="tab-btn" onclick="switchTab('my-readings', this)">📖 Minhas Leituras</button>
+            <button class="tab-btn" onclick="switchTab('community', this)">🌐 Feed da Comunidade</button>
+        </nav>
 
-    <div id="community" class="tab-content">
-        <main class="gallery-container" id="community-gallery">
-            
-            <div class="card">
-                <img src="https://picsum.photos/id/1050/300/200" alt="Capa O Nome do Vento">
-                <div class="card-content">
-                    <h3>O Nome do Vento</h3>
-                    <span class="author">Patrick Rothfuss</span>
-                    <span class="genre-tag">🧙 Fantasia</span>
-                    <span class="status-badge status-finished">⭐ 4.9/5 da Comunidade</span>
-                    <p class="initial-comment"><strong>Comentário inicial:</strong> "A trajetória mágica e fascinante do lendário Kvothe."</p>
+        <div id="my-shelf" class="tab-content active">
+            <section class="form-container">
+                <h2>➕ Adicionar Livro à Biblioteca Shuenck</h2>
+                <form id="book-form">
+                    <div class="form-group">
+                        <label for="title">Título do Livro</label>
+                        <input type="text" id="title" placeholder="Ex: O Alquimista" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="author">Autor(a)</label>
+                        <input type="text" id="author" placeholder="Ex: Paulo Coelho" required>
+                    </div>
 
-                    <div class="comments-section">
-                        <button class="btn-toggle-comments" onclick="toggleComments(this)">💬 Ver comentários de leitores (2)</button>
-                        <div class="comments-list">
-                            <div class="comment-item">
-                                <span class="user-name">Felipe R.</span>
-                                Um dos melhores sistemas de magia que já li!
-                            </div>
-                            <div class="comment-item">
-                                <span class="user-name">Beatriz M.</span>
-                                A escrita é poética e envolvente do começo ao fim.
-                            </div>
-                            <div class="add-comment-box">
-                                <input type="text" placeholder="Deixe um comentário público..." onkeypress="handleKeyPress(event, this)">
-                                <button onclick="addExtraComment(this)">Enviar</button>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label for="genre">Gênero Literário</label>
+                        <select id="genre" required>
+                            <option value="Fantasia">Fantasia</option>
+                            <option value="Ficção Científica">Ficção Científica</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Suspense / Policial">Suspense / Policial</option>
+                            <option value="Clássicos">Clássicos</option>
+                            <option value="Não-Ficção / Desenvolvimento">Não-Ficção / Desenvolvimento</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="initial-comment">Seu Comentário / Impressões Iniciais</label>
+                        <textarea id="initial-comment" rows="2" placeholder="O que você está achando desse livro?" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-add">Adicionar à Estante</button>
+                </form>
+            </section>
+
+            <main class="gallery-container" id="my-gallery">
+                <p class="empty-message" id="empty-shelf-msg">Nenhum livro adicionado ainda. Preencha o formulário acima para cadastrar um livro!</p>
+            </main>
+        </div>
+
+        <div id="my-readings" class="tab-content">
+            <main class="gallery-container" id="readings-gallery">
+                <p class="empty-message" id="empty-readings-msg">Nenhum livro adicionado em "Minhas Leituras" ainda. Cadastre um livro na aba "Minha Estante"!</p>
+            </main>
+        </div>
+
+        <div id="community" class="tab-content">
+            <main class="gallery-container" id="community-gallery">
+                <div class="card">
+                    <img src="https://picsum.photos/id/1050/300/200" alt="Capa O Nome do Vento">
+                    <div class="card-content">
+                        <h3>O Nome do Vento</h3>
+                        <span class="author">Patrick Rothfuss</span>
+                        <span class="genre-tag">🧙 Fantasia</span>
+                        <span class="status-badge status-finished">⭐ 4.9/5 da Comunidade</span>
+                        <p class="initial-comment"><strong>Comentário inicial:</strong> "A trajetória mágica e fascinante do lendário Kvothe."</p>
                     </div>
                 </div>
-            </div>
 
-            <div class="card">
-                <img src="https://picsum.photos/id/1067/300/200" alt="Capa Duna">
-                <div class="card-content">
-                    <h3>Duna</h3>
-                    <span class="author">Frank Herbert</span>
-                    <span class="genre-tag">🚀 Ficção Científica</span>
-                    <span class="status-badge status-finished">⭐ 4.8/5 da Comunidade</span>
-                    <p class="initial-comment"><strong>Comentário inicial:</strong> "Uma disputa política e ecológica no planeta desértico Arrakis."</p>
-
-                    <div class="comments-section">
-                        <button class="btn-toggle-comments" onclick="toggleComments(this)">💬 Ver comentários de leitores (1)</button>
-                        <div class="comments-list">
-                            <div class="comment-item">
-                                <span class="user-name">Lucas A.</span>
-                                Atemporal! A construção do universo é incrível.
-                            </div>
-                            <div class="add-comment-box">
-                                <input type="text" placeholder="Deixe um comentário público..." onkeypress="handleKeyPress(event, this)">
-                                <button onclick="addExtraComment(this)">Enviar</button>
-                            </div>
-                        </div>
+                <div class="card">
+                    <img src="https://picsum.photos/id/1067/300/200" alt="Capa Duna">
+                    <div class="card-content">
+                        <h3>Duna</h3>
+                        <span class="author">Frank Herbert</span>
+                        <span class="genre-tag">🚀 Ficção Científica</span>
+                        <span class="status-badge status-finished">⭐ 4.8/5 da Comunidade</span>
+                        <p class="initial-comment"><strong>Comentário inicial:</strong> "Uma disputa política e ecológica no planeta desértico Arrakis."</p>
                     </div>
                 </div>
-            </div>
-
-            <div class="card">
-                <img src="https://picsum.photos/id/1062/300/200" alt="Capa Orgulho e Preconceito">
-                <div class="card-content">
-                    <h3>Orgulho e Preconceito</h3>
-                    <span class="author">Jane Austen</span>
-                    <span class="genre-tag">💖 Romance</span>
-                    <span class="status-badge status-finished">⭐ 4.9/5 da Comunidade</span>
-                    <p class="initial-comment"><strong>Comentário inicial:</strong> "A dinâmica inesquecível entre Elizabeth Bennet e Mr. Darcy."</p>
-
-                    <div class="comments-section">
-                        <button class="btn-toggle-comments" onclick="toggleComments(this)">💬 Ver comentários de leitores (1)</button>
-                        <div class="comments-list">
-                            <div class="comment-item">
-                                <span class="user-name">Camila T.</span>
-                                A ironia e o humor da Jane Austen são perfeitos!
-                            </div>
-                            <div class="add-comment-box">
-                                <input type="text" placeholder="Deixe um comentário público..." onkeypress="handleKeyPress(event, this)">
-                                <button onclick="addExtraComment(this)">Enviar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </main>
+            </main>
+        </div>
     </div>
 
     <script>
+        // --- ESTADO DA APLICAÇÃO ---
+        let currentUser = null;
+        let isSignUpMode = false;
+
+        // Elementos de Login
+        const authContainer = document.getElementById('auth-container');
+        const authForm = document.getElementById('auth-form');
+        const authTitle = document.getElementById('auth-title');
+        const authSubmitBtn = document.getElementById('auth-submit-btn');
+        const authToggleText = document.getElementById('auth-toggle-text');
+        
+        // Elementos Principais
+        const appContent = document.getElementById('app-content');
+        const userBar = document.getElementById('user-bar');
+        const userGreeting = document.getElementById('user-greeting');
+
+        // Elementos da Galeria
         const bookForm = document.getElementById('book-form');
         const myGallery = document.getElementById('my-gallery');
         const readingsGallery = document.getElementById('readings-gallery');
         const emptyShelfMsg = document.getElementById('empty-shelf-msg');
         const emptyReadingsMsg = document.getElementById('empty-readings-msg');
 
-        // Alternar entre as 3 Abas
-        function switchTab(tabId, button) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        // --- SISTEMA DE AUTENTICAÇÃO ---
+        
+        // Alternar entre Login e Cadastro
+        authToggleText.addEventListener('click', () => {
+            isSignUpMode = !isSignUpMode;
+            if (isSignUpMode) {
+                authTitle.textContent = '📝 Criar Nova Conta';
+                authSubmitBtn.textContent = 'Cadastrar';
+                authToggleText.textContent = 'Já tem uma conta? Faça Login';
+            } else {
+                authTitle.textContent = '🔑 Entrar na Minha Conta';
+                authSubmitBtn.textContent = 'Entrar';
+                authToggleText.textContent = 'Não tem uma conta? Cadastre-se';
+            }
+        });
 
-            document.getElementById(tabId).classList.add('active');
-            button.classList.add('active');
+        // Enviar Form de Autenticação
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const usernameInput = document.getElementById('username').value.trim();
+            const passwordInput = document.getElementById('password').value.trim();
+
+            const users = JSON.parse(localStorage.getItem('shuenck_users') || '{}');
+
+            if (isSignUpMode) {
+                if (users[usernameInput]) {
+                    alert('Este nome de usuário já existe! Escolha outro.');
+                    return;
+                }
+                users[usernameInput] = { password: passwordInput, books: [] };
+                localStorage.setItem('shuenck_users', JSON.stringify(users));
+                alert('Conta criada com sucesso! Faça login.');
+                authToggleText.click();
+            } else {
+                if (!users[usernameInput] || users[usernameInput].password !== passwordInput) {
+                    alert('Usuário ou senha incorretos!');
+                    return;
+                }
+                currentUser = usernameInput;
+                loginUser();
+            }
+        });
+
+        function loginUser() {
+            authContainer.style.display = 'none';
+            appContent.style.display = 'block';
+            userBar.style.display = 'flex';
+            userGreeting.textContent = `Olá, ${currentUser}!`;
+            loadUserBooks();
         }
 
-        // Adicionar Livro no Formulário
+        function logout() {
+            currentUser = null;
+            authContainer.style.display = 'block';
+            appContent.style.display = 'none';
+            userBar.style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // --- GERENCIAMENTO DE LIVROS & BANCO DE DADOS LOCAL ---
+
+        function getUserData() {
+            const users = JSON.parse(localStorage.getItem('shuenck_users') || '{}');
+            return users[currentUser] || { books: [] };
+        }
+
+        function saveUserData(userData) {
+            const users = JSON.parse(localStorage.getItem('shuenck_users') || '{}');
+            users[currentUser] = userData;
+            localStorage.setItem('shuenck_users', JSON.stringify(users));
+        }
+
+        // Adicionar Novo Livro
         bookForm.addEventListener('submit', function(event) {
             event.preventDefault();
-
-            if (emptyShelfMsg) emptyShelfMsg.style.display = 'none';
-            if (emptyReadingsMsg) emptyReadingsMsg.style.display = 'none';
 
             const title = document.getElementById('title').value;
             const author = document.getElementById('author').value;
@@ -525,36 +626,75 @@
             const randomImgId = Math.floor(Math.random() * 50) + 10;
             const imgUrl = `https://picsum.photos/id/${randomImgId}/300/200`;
 
-            // Card Simples para a "Minha Estante"
-            const shelfCard = document.createElement('div');
-            shelfCard.classList.add('card');
-            shelfCard.innerHTML = `
-                <img src="${imgUrl}" alt="Capa do livro" onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Imagem'">
-                <div class="card-content">
-                    <h3>${title}</h3>
-                    <span class="author">${author}</span>
-                    <span class="genre-tag">🔖 ${genre}</span>
-                    <span class="status-badge status-reading">📖 Cadastrado na Estante</span>
-                    <p class="initial-comment"><strong>Seu Comentário:</strong> "${initialComment}"</p>
-                </div>
-            `;
-            myGallery.prepend(shelfCard);
+            const newBook = {
+                id: Date.now(),
+                title,
+                author,
+                genre,
+                initialComment,
+                imgUrl,
+                status: 'reading', // 'reading' ou 'finished'
+                stars: 0,
+                finalComment: '',
+                extraComments: []
+            };
 
-            // Card Completo para "Minhas Leituras"
-            const readingCard = document.createElement('div');
-            readingCard.classList.add('card');
-            readingCard.innerHTML = `
-                <img src="${imgUrl}" alt="Capa do livro" onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Imagem'">
-                <div class="card-content">
-                    <h3>${title}</h3>
-                    <span class="author">${author}</span>
-                    <span class="genre-tag">🔖 ${genre}</span>
-                    <span class="status-badge status-reading">📖 Lendo atualmente</span>
-                    <p class="initial-comment"><strong>Seu Comentário Inicial:</strong> "${initialComment}"</p>
+            const userData = getUserData();
+            userData.books.unshift(newBook);
+            saveUserData(userData);
 
-                    <div class="review-section">
+            bookForm.reset();
+            loadUserBooks();
+        });
+
+        // Carregar Livros Salvos no DOM
+        function loadUserBooks() {
+            myGallery.innerHTML = '';
+            readingsGallery.innerHTML = '';
+
+            const userData = getUserData();
+            const books = userData.books || [];
+
+            if (books.length === 0) {
+                myGallery.innerHTML = '<p class="empty-message">Nenhum livro adicionado ainda. Preencha o formulário acima para cadastrar um livro!</p>';
+                readingsGallery.innerHTML = '<p class="empty-message">Nenhum livro adicionado em "Minhas Leituras" ainda.</p>';
+                return;
+            }
+
+            books.forEach(book => {
+                // Card Minha Estante
+                const shelfCard = document.createElement('div');
+                shelfCard.classList.add('card');
+                shelfCard.innerHTML = `
+                    <img src="${book.imgUrl}" alt="Capa do livro" onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Imagem'">
+                    <div class="card-content">
+                        <h3>${book.title}</h3>
+                        <span class="author">${book.author}</span>
+                        <span class="genre-tag">🔖 ${book.genre}</span>
+                        <span class="status-badge ${book.status === 'finished' ? 'status-finished' : 'status-reading'}">
+                            ${book.status === 'finished' ? '✅ Leitura Concluída' : '📖 Cadastrado na Estante'}
+                        </span>
+                        <p class="initial-comment"><strong>Seu Comentário:</strong> "${book.initialComment}"</p>
+                    </div>
+                `;
+                myGallery.appendChild(shelfCard);
+
+                // Card Minhas Leituras
+                const readingCard = document.createElement('div');
+                readingCard.classList.add('card');
+                
+                let reviewHTML = '';
+                if (book.status === 'finished') {
+                    const starsText = '⭐'.repeat(book.stars);
+                    reviewHTML = `
+                        <div class="review-display">
+                            <div class="stars-display">${starsText}</div>
+                            <p style="font-size: 13px; color: #444;"><strong>Sua Resenha Final:</strong> ${book.finalComment || 'Sem resenha escrita.'}</p>
+                        </div>
+                    `;
+                } else {
+                    reviewHTML = `
                         <button class="btn-finish" onclick="showReviewForm(this)">Concluir Leitura</button>
-                        
                         <div class="review-form">
                             <select class="star-rating">
                                 <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
@@ -564,37 +704,50 @@
                                 <option value="1">⭐ (1/5)</option>
                             </select>
                             <textarea class="final-comment" rows="2" placeholder="Escreva sua resenha final..."></textarea>
-                            <button class="btn-add" onclick="saveReview(this)">Salvar Avaliação</button>
+                            <button class="btn-add" onclick="saveReview(${book.id}, this)">Salvar Avaliação</button>
+                        </div>
+                    `;
+                }
+
+                // Renderizar comentários extras
+                let commentsItemsHTML = book.extraComments.map(c => `
+                    <div class="comment-item">
+                        <span class="user-name">${c.author}:</span> ${c.text}
+                    </div>
+                `).join('');
+
+                readingCard.innerHTML = `
+                    <img src="${book.imgUrl}" alt="Capa do livro" onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Imagem'">
+                    <div class="card-content">
+                        <h3>${book.title}</h3>
+                        <span class="author">${book.author}</span>
+                        <span class="genre-tag">🔖 ${book.genre}</span>
+                        <span class="status-badge ${book.status === 'finished' ? 'status-finished' : 'status-reading'}">
+                            ${book.status === 'finished' ? '✅ Leitura Concluída' : '📖 Lendo atualmente'}
+                        </span>
+                        <p class="initial-comment"><strong>Seu Comentário Inicial:</strong> "${book.initialComment}"</p>
+
+                        <div class="review-section">
+                            ${reviewHTML}
                         </div>
 
-                        <div class="review-display" style="display: none;"></div>
-                    </div>
-
-                    <div class="comments-section">
-                        <button class="btn-toggle-comments" onclick="toggleComments(this)">💬 Ver comentários das pessoas (2)</button>
-                        <div class="comments-list">
-                            <div class="comment-item">
-                                <span class="user-name">Ana Clara ⭐⭐⭐⭐⭐</span>
-                                Também li esse livro e achei a história incrível!
-                            </div>
-                            <div class="comment-item">
-                                <span class="user-name">João Pedro ⭐⭐⭐⭐</span>
-                                Muito boa escolha! O ritmo do autor é sensacional.
-                            </div>
-                            <div class="add-comment-box">
-                                <input type="text" placeholder="Deixe outro comentário..." onkeypress="handleKeyPress(event, this)">
-                                <button onclick="addExtraComment(this)">Enviar</button>
+                        <div class="comments-section">
+                            <button class="btn-toggle-comments" onclick="toggleComments(this)">💬 Ver comentários (${book.extraComments.length})</button>
+                            <div class="comments-list">
+                                ${commentsItemsHTML}
+                                <div class="add-comment-box">
+                                    <input type="text" placeholder="Deixe um comentário..." onkeypress="handleKeyPress(event, ${book.id}, this)">
+                                    <button onclick="addExtraComment(${book.id}, this)">Enviar</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
-            readingsGallery.prepend(readingCard);
+                `;
+                readingsGallery.appendChild(readingCard);
+            });
+        }
 
-            bookForm.reset();
-        });
-
-        // Revelar formulário de resenha
+        // Finalizar Leitura
         function showReviewForm(button) {
             const reviewSection = button.parentElement;
             const reviewForm = reviewSection.querySelector('.review-form');
@@ -602,69 +755,58 @@
             reviewForm.style.display = 'flex';
         }
 
-        // Salvar avaliação final
-        function saveReview(button) {
-            const reviewSection = button.parentElement.parentElement;
-            const cardContent = reviewSection.parentElement;
-            
-            const starSelect = reviewSection.querySelector('.star-rating');
-            const starsCount = parseInt(starSelect.value, 10);
+        function saveReview(bookId, button) {
+            const reviewSection = button.parentElement;
+            const stars = parseInt(reviewSection.querySelector('.star-rating').value, 10);
             const finalComment = reviewSection.querySelector('.final-comment').value.trim();
 
-            const starsText = '⭐'.repeat(starsCount);
-
-            const statusBadge = cardContent.querySelector('.status-badge');
-            statusBadge.className = 'status-badge status-finished';
-            statusBadge.textContent = '✅ Leitura Concluída';
-
-            reviewSection.querySelector('.review-form').style.display = 'none';
-
-            const reviewDisplay = reviewSection.querySelector('.review-display');
-            reviewDisplay.innerHTML = `
-                <div class="stars-display">${starsText}</div>
-                <p style="font-size: 13px; color: #444;"><strong>Sua Resenha Final:</strong> ${finalComment ? finalComment : 'Sem resenha escrita.'}</p>
-            `;
-            reviewDisplay.style.display = 'block';
-        }
-
-        // Abrir/Fechar comentários das pessoas
-        function toggleComments(button) {
-            const commentsList = button.nextElementSibling;
-            if (commentsList.style.display === 'flex') {
-                commentsList.style.display = 'none';
-            } else {
-                commentsList.style.display = 'flex';
+            const userData = getUserData();
+            const book = userData.books.find(b => b.id === bookId);
+            if (book) {
+                book.status = 'finished';
+                book.stars = stars;
+                book.finalComment = finalComment;
+                saveUserData(userData);
+                loadUserBooks();
             }
         }
 
-        // Permitir enviar comentário ao pressionar Enter
-        function handleKeyPress(event, input) {
+        // Adicionar Comentários Dinâmicos ao Livro
+        function addExtraComment(bookId, button) {
+            const input = button.previousElementSibling;
+            const text = input.value.trim();
+
+            if (text !== '') {
+                const userData = getUserData();
+                const book = userData.books.find(b => b.id === bookId);
+                if (book) {
+                    book.extraComments.push({ author: currentUser, text });
+                    saveUserData(userData);
+                    loadUserBooks();
+                }
+            }
+        }
+
+        function handleKeyPress(event, bookId, input) {
             if (event.key === 'Enter') {
                 const btn = input.nextElementSibling;
-                addExtraComment(btn);
+                addExtraComment(bookId, btn);
             }
         }
 
-        // Adicionar novo comentário
-        function addExtraComment(button) {
-            const input = button.previousElementSibling;
-            const commentText = input.value.trim();
+        // Alternar Visualização das Abas
+        function switchTab(tabId, button) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
 
-            if (commentText !== '') {
-                const commentsList = button.parentElement.parentElement;
-                
-                const newComment = document.createElement('div');
-                newComment.classList.add('comment-item');
-                newComment.innerHTML = `<span class="user-name">Outro Leitor:</span> ${commentText}`;
+            document.getElementById(tabId).classList.add('active');
+            button.classList.add('active');
+        }
 
-                commentsList.insertBefore(newComment, button.parentElement);
-
-                input.value = '';
-
-                const toggleBtn = commentsList.previousElementSibling;
-                const totalComments = commentsList.querySelectorAll('.comment-item').length;
-                toggleBtn.textContent = `💬 Ver comentários das pessoas (${totalComments})`;
-            }
+        // Mostrar/Ocultar Comentários
+        function toggleComments(button) {
+            const commentsList = button.nextElementSibling;
+            commentsList.style.display = commentsList.style.display === 'flex' ? 'none' : 'flex';
         }
     </script>
 </body>
