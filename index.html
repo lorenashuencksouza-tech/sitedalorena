@@ -170,6 +170,7 @@
             width: 100%;
             height: 180px;
             object-fit: cover;
+            background-color: #eee;
         }
 
         .card-content {
@@ -252,6 +253,10 @@
             font-weight: bold;
             cursor: pointer;
             margin-bottom: 10px;
+        }
+
+        .btn-finish:hover {
+            background-color: #219150;
         }
 
         .review-form {
@@ -337,6 +342,10 @@
             font-size: 12px;
             border-radius: 4px;
             cursor: pointer;
+        }
+
+        .add-comment-box button:hover {
+            background-color: #1f6391;
         }
     </style>
 </head>
@@ -424,7 +433,7 @@
                                 A escrita é poética e envolvente do começo ao fim.
                             </div>
                             <div class="add-comment-box">
-                                <input type="text" placeholder="Deixe um comentário público...">
+                                <input type="text" placeholder="Deixe um comentário público..." onkeypress="handleKeyPress(event, this)">
                                 <button onclick="addExtraComment(this)">Enviar</button>
                             </div>
                         </div>
@@ -449,7 +458,7 @@
                                 Atemporal! A construção do universo é incrível.
                             </div>
                             <div class="add-comment-box">
-                                <input type="text" placeholder="Deixe um comentário público...">
+                                <input type="text" placeholder="Deixe um comentário público..." onkeypress="handleKeyPress(event, this)">
                                 <button onclick="addExtraComment(this)">Enviar</button>
                             </div>
                         </div>
@@ -474,7 +483,7 @@
                                 A ironia e o humor da Jane Austen são perfeitos!
                             </div>
                             <div class="add-comment-box">
-                                <input type="text" placeholder="Deixe um comentário público...">
+                                <input type="text" placeholder="Deixe um comentário público..." onkeypress="handleKeyPress(event, this)">
                                 <button onclick="addExtraComment(this)">Enviar</button>
                             </div>
                         </div>
@@ -520,7 +529,7 @@
             const shelfCard = document.createElement('div');
             shelfCard.classList.add('card');
             shelfCard.innerHTML = `
-                <img src="${imgUrl}" alt="Capa do livro">
+                <img src="${imgUrl}" alt="Capa do livro" onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Imagem'">
                 <div class="card-content">
                     <h3>${title}</h3>
                     <span class="author">${author}</span>
@@ -531,11 +540,11 @@
             `;
             myGallery.prepend(shelfCard);
 
-            // Card Completo para "Minhas Leituras" (Com área de comentários e resenha)
+            // Card Completo para "Minhas Leituras"
             const readingCard = document.createElement('div');
             readingCard.classList.add('card');
             readingCard.innerHTML = `
-                <img src="${imgUrl}" alt="Capa do livro">
+                <img src="${imgUrl}" alt="Capa do livro" onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Imagem'">
                 <div class="card-content">
                     <h3>${title}</h3>
                     <span class="author">${author}</span>
@@ -573,7 +582,7 @@
                                 Muito boa escolha! O ritmo do autor é sensacional.
                             </div>
                             <div class="add-comment-box">
-                                <input type="text" placeholder="Deixe outro comentário...">
+                                <input type="text" placeholder="Deixe outro comentário..." onkeypress="handleKeyPress(event, this)">
                                 <button onclick="addExtraComment(this)">Enviar</button>
                             </div>
                         </div>
@@ -600,7 +609,7 @@
             
             const starSelect = reviewSection.querySelector('.star-rating');
             const starsCount = parseInt(starSelect.value, 10);
-            const finalComment = reviewSection.querySelector('.final-comment').value;
+            const finalComment = reviewSection.querySelector('.final-comment').value.trim();
 
             const starsText = '⭐'.repeat(starsCount);
 
@@ -613,7 +622,7 @@
             const reviewDisplay = reviewSection.querySelector('.review-display');
             reviewDisplay.innerHTML = `
                 <div class="stars-display">${starsText}</div>
-                <p style="font-size: 13px; color: #444;"><strong>Sua Resenha Final:</strong> ${finalComment ? finalComment : 'Sem resenha cadastrada.'}</p>
+                <p style="font-size: 13px; color: #444;"><strong>Sua Resenha Final:</strong> ${finalComment ? finalComment : 'Sem resenha escrita.'}</p>
             `;
             reviewDisplay.style.display = 'block';
         }
@@ -625,6 +634,14 @@
                 commentsList.style.display = 'none';
             } else {
                 commentsList.style.display = 'flex';
+            }
+        }
+
+        // Permitir enviar comentário ao pressionar Enter
+        function handleKeyPress(event, input) {
+            if (event.key === 'Enter') {
+                const btn = input.nextElementSibling;
+                addExtraComment(btn);
             }
         }
 
